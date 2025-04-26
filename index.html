@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Eras Tour Mashup Chart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+      color: #333;
+    }
+    .zoom-container {
+      width: 100%;
+      max-width: 1200px;
+      overflow: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(63, 69, 81, 0.16);
+      background: white;
+    }
+    .zoom-target {
+      transform-origin: top left;
+      transition: transform 0.2s ease;
+    }
+    iframe {
+      width: 1200px;
+      height: 900px;
+      border: none;
+    }
+    .credit {
+      margin-top: 1em;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .credit a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 style="font-weight: 900; font-size: 2.5em; color: #222; text-align: center;">
+    Eras Tour Mashup Chart
+  </h1>
+  
+
+  <div class="zoom-container" id="zoomContainer">
+    <div class="zoom-target" id="zoomTarget">
+      <iframe loading="lazy"
+        src="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?embed"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <div class="credit">
+    <a href="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?utm_content=DAGlixJsmX4&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">
+      View "Our s" design by Jluison on Canva
+    </a>
+  </div>
+
+  <script>
+    let scale = 1;
+    const zoomTarget = document.getElementById('zoomTarget');
+
+    function applyZoom() {
+      zoomTarget.style.transform = `scale(${scale})`;
+    }
+
+    document.getElementById('zoomContainer').addEventListener('wheel', function (e) {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          scale += 0.1;
+        } else {
+          scale = Math.max(0.2, scale - 0.1);
+        }
+        applyZoom();
+      }
+    });
+  </script>
+
+</body>
+</html>
