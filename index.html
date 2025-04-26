@@ -6,48 +6,111 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      background-color: #e0dddd;
       padding: 2em;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
+
     h1 {
       font-size: 2.5em;
       font-weight: 900;
       color: #222;
       text-align: center;
-      margin-bottom: 0.5em;
+      margin-bottom: 1.5em;
     }
-    iframe {
-      max-width: 100%;
+
+    .content-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+  width: 100%;
+  max-width: 1850px; /* Increased from 1200px */
+  margin: 0 auto;
+  position: relative;
+  right: -70px;
+}
+
+
+    .zoom-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(63, 69, 81, 0.16);
+      overflow: hidden;
+      width: 70%;
+    }
+
+    .zoom-container iframe {
+      width: 100%;
+      height: 800px;
       border: none;
     }
+
+    .banner-thumb {
+      max-width: 150px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      left: 800px;
+    }
+
+    .banner-thumb:hover {
+      transform: scale(1.1); /* Hover effect */
+      z-index: 10;
+    }
+
+    /* Overlay styles for large image */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .overlay img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 2em;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .credit {
+      margin-top: 2em;
+      font-size: 0.9em;
+      color: #555;
+      text-align: center;
+    }
+
+    .credit a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+
     .video-container {
       width: 100%;
       max-width: 800px;
       margin-top: 2em;
-    }
-    .zoom-container {
-      width: 100%;
-      max-width: 1200px;
-      overflow: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(63, 69, 81, 0.16);
-      background: white;
-    }
-    .zoom-target {
-      transform-origin: top left;
-      transition: transform 0.2s ease;
-    }
-    .credit {
-      margin-top: 1em;
-      font-size: 0.9em;
-      color: #555;
-    }
-    .credit a {
-      color: #0066cc;
-      text-decoration: none;
     }
   </style>
 </head>
@@ -55,15 +118,19 @@
 
   <h1>Eras Tour Mashup Chart</h1>
 
-  <div class="zoom-container" id="zoomContainer">
-    <div class="zoom-target" id="zoomTarget">
+  <div class="content-row">
+    <div class="zoom-container">
       <iframe loading="lazy"
         src="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?embed"
-        width="1200" height="900">
+        allowfullscreen>
       </iframe>
     </div>
-  </div>
 
+    <!-- Banner Thumbnail (inside flex flow now) -->
+    <img src="lesbian visibility day.jpg" alt="Banner Thumbnail" class="banner-thumb" onclick="openOverlay()">
+  </div>
+  
+  <!-- Credit Section -->
   <div class="credit">
     <a href="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?utm_content=DAGlixJsmX4&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">
       View "Mashup Chart" design by Lurker on Canva
@@ -79,25 +146,22 @@
     </iframe>
   </div>
 
-  <script>
-    let scale = 1;
-    const zoomTarget = document.getElementById('zoomTarget');
+  <!-- Overlay Popup for Larger Image -->
+  <div class="overlay" id="overlay">
+    <span class="close-btn" onclick="closeOverlay()">&times;</span>
+    <img src="lesbian visibility day.jpg" alt="Full Banner">
+  </div>
 
-    function applyZoom() {
-      zoomTarget.style.transform = `scale(${scale})`;
+
+
+  <script>
+    function openOverlay() {
+      document.getElementById('overlay').style.display = 'flex';
     }
 
-    document.getElementById('zoomContainer').addEventListener('wheel', function (e) {
-      if (e.ctrlKey) {
-        e.preventDefault();
-        if (e.deltaY < 0) {
-          scale += 0.1;
-        } else {
-          scale = Math.max(0.2, scale - 0.1);
-        }
-        applyZoom();
-      }
-    });
+    function closeOverlay() {
+      document.getElementById('overlay').style.display = 'none';
+    }
   </script>
 
 </body>
