@@ -1,116 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
   <title>Eras Tour Mashup Chart</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #e0dddd;
-      padding: 2em;
+      margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
       box-sizing: border-box;
     }
 
     h1 {
-      font-size: 2.5em;
+      font-size: 2.2rem;
       font-weight: 900;
       color: #222;
       text-align: center;
-      margin-bottom: 1.5em;
+      margin: 1rem 0;
     }
 
     .content-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2em;
-  width: 100%;
-  max-width: 1850px; /* Increased from 1200px */
-  margin: 0 auto;
-  position: relative;
-  right: -83px;
-}
+      display: flex;
+      justify-content: center; /* center chart with side containers */
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+      padding: 0 1rem;
+    }
 
+    .side-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px; /* same as banner max-width */
+    }
 
     .zoom-container {
+      flex: 1; /* chart grows to fill remaining space */
+      min-width: 300px;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(63, 69, 81, 0.16);
+      box-shadow: 0 2px 8px rgba(63,69,81,0.16);
       overflow: hidden;
-      width: 70%;
     }
 
-    .zoom-container iframe {
-      width: 100%;
-      height: 800px;
-      border: none;
-    }
+    .zoom-container iframe { width:100%; height:560px; border:none; }
 
     .banner-thumb {
-      max-width: 150px;
+      max-width: 100%;
       border-radius: 8px;
       cursor: pointer;
       transition: transform 0.2s;
-      left: 800px;
     }
 
-    .banner-thumb:hover {
-      transform: scale(1.1); /* Hover effect */
-      z-index: 10;
+    .banner-thumb:hover { transform: scale(1.06); }
+
+    .credit { margin-top: 1rem; font-size: 0.9rem; color: #555; text-align:center; padding:0 1rem; }
+    .credit a { color:#0066cc; text-decoration:none; }
+
+    /* Slides preview */
+    .slides-preview {
+      position: relative;
+      width: 80%;
+      max-width: 500px;
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(63,69,81,0.16);
+      cursor: pointer;
+      margin-top: 100px;
+      margin-bottom: 50px;
+    }
+    .slides-preview iframe { width:100%; height:420px; border:none; display:block; }
+    .slides-overlay { position:absolute; inset:0; z-index:2; cursor:pointer; }
+    .zoom-icon {
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      font-size:40px; color:#fff; background:rgba(0,0,0,0.6); padding:12px 16px; border-radius:50%;
+      z-index:3; pointer-events:auto; cursor:pointer;
     }
 
-    /* Overlay styles for large image */
+    /* Fullscreen overlay */
     .overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.75);
+      inset: 0;
+      background-color: rgba(0,0,0,0.92);
       display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
+      z-index: 9999;
+      overflow: auto;
     }
 
-    .overlay img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    .overlay-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow: auto;
+      position: relative;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #zoomWrapper {
+      display: inline-block;
+      background: #000;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    }
+
+    #zoomWrapper img, #zoomWrapper iframe {
+      display:block;
+      width:100%;
+      height:100%;
+      border: none;
     }
 
     .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      font-size: 2em;
-      color: white;
+      position: fixed;
+      top: 14px;
+      right: 22px;
+      font-size: 2.6rem;
+      color: #fff;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 700;
+      z-index: 10010;
+      user-select: none;
     }
 
-    .credit {
-      margin-top: 2em;
-      font-size: 0.9em;
-      color: #555;
-      text-align: center;
+    .zoom-controls {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      display: none;
+      gap: 8px;
+      z-index: 10011;
+    }
+    .zoom-controls button {
+      background: rgba(255,255,255,0.95);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
 
-    .credit a {
-      color: #0066cc;
-      text-decoration: none;
-    }
-
-    .video-container {
-      width: 100%;
-      max-width: 800px;
-      margin-top: 2em;
+    @media (max-width:720px) {
+      .content-row {
+        flex-direction: column;
+      }
+      .side-container { width: auto; margin-top: 1rem; }
+      .zoom-container iframe { height: 420px; }
+      .slides-preview iframe { height: 320px; }
+      .overlay-content { padding:12px; }
     }
   </style>
 </head>
@@ -119,50 +168,147 @@
   <h1>Eras Tour Mashup Chart</h1>
 
   <div class="content-row">
+    <!-- Left container (empty for symmetry) -->
+    <div class="side-container left-container"></div>
+
+    <!-- Center chart -->
     <div class="zoom-container">
       <iframe loading="lazy"
         src="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?embed"
-        allowfullscreen>
+        title="Eras Tour Mashup Chart from Canva" allowfullscreen>
       </iframe>
     </div>
 
-    <!-- Banner Thumbnail (inside flex flow now) -->
-    <img src="lesbian visibility day.jpg" alt="Banner Thumbnail" class="banner-thumb" onclick="openOverlay()">
+    <!-- Right container with banner -->
+    <div class="side-container right-container">
+      <img class="banner-thumb" src="lesbian visibility day.jpg" alt="Lesbian Visibility Day Banner" onclick="openOverlay('banner')" />
+    </div>
   </div>
-  
-  <!-- Credit Section -->
+
   <div class="credit">
-    <a href="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view?utm_content=DAGlixJsmX4&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">
-      View "Mashup Chart" design by Lurker on Canva
-    </a>
+    <a href="https://www.canva.com/design/DAGlixJsmX4/sXA0Vur-Ehf_Tmlbs1Rhkg/view" target="_blank" rel="noopener">View "Mashup Chart" design by Lurker on Canva</a>
   </div>
 
-  <div class="video-container">
-    <iframe width="100%" height="315" 
-      src="https://www.youtube.com/embed/ew-Q_L1rCow" 
-      title="Eras Tour Mashup" frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-      allowfullscreen>
-    </iframe>
+  <div class="slides-preview" aria-hidden="false">
+    <div class="slides-overlay" onclick="openOverlay('slides')"></div>
+    <iframe id="slidesPreviewFrame"
+      src="https://docs.google.com/presentation/d/1GsZE6ceHs5oKncotKa5VUwZG2z6cDd-OwEXSXLMGvBo/embed?start=false&loop=false&delayms=3000"
+      title="Google Slides Preview"></iframe>
+    <div class="zoom-icon" onclick="openOverlay('slides')">🔍</div>
   </div>
 
-  <!-- Overlay Popup for Larger Image -->
-  <div class="overlay" id="overlay">
-    <span class="close-btn" onclick="closeOverlay()">&times;</span>
-    <img src="lesbian visibility day.jpg" alt="Full Banner">
+  <!-- Full overlay -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="close-btn" role="button" aria-label="Close" onclick="closeOverlay()">×</div>
+
+    <div class="overlay-content" id="overlayContent">
+      <div id="zoomWrapper"></div>
+    </div>
+
+    <div class="zoom-controls" id="zoomControls">
+      <button onclick="zoomIn()">＋</button>
+      <button onclick="zoomOut()">−</button>
+      <button onclick="resetZoom()">Reset</button>
+    </div>
   </div>
 
+<script>
+  const SLIDE_ID = '1GsZE6ceHs5oKncotKa5VUwZG2z6cDd-OwEXSXLMGvBo';
+  let zoomLevel = 1, baseW = 0, baseH = 0, currentType = null;
 
+  function computeBaseSizeForSlides() {
+    const maxW = Math.min(window.innerWidth * 0.9, 1200);
+    const maxH = Math.min(window.innerHeight * 0.85, 900);
+    let w = Math.min(maxW, Math.round(maxH * (16/9)));
+    let h = Math.round(w * (9/16));
+    if (h > maxH) { h = maxH; w = Math.round(h * (16/9)); }
+    return { w, h };
+  }
 
-  <script>
-    function openOverlay() {
-      document.getElementById('overlay').style.display = 'flex';
+  function computeBaseSizeForImage(imgNaturalW, imgNaturalH) {
+    const maxW = Math.min(window.innerWidth * 0.9, imgNaturalW || 1200);
+    const maxH = Math.min(window.innerHeight * 0.85, imgNaturalH || 900);
+    const imgRatio = (imgNaturalW && imgNaturalH) ? (imgNaturalW / imgNaturalH) : (16/9);
+    let w = maxW, h = Math.round(w / imgRatio);
+    if (h > maxH) { h = maxH; w = Math.round(h * imgRatio); }
+    return { w, h };
+  }
+
+  function openOverlay(type) {
+    currentType = type;
+    zoomLevel = 1;
+    const overlay = document.getElementById('overlay');
+    const wrapper = document.getElementById('zoomWrapper');
+    const zoomControls = document.getElementById('zoomControls');
+    const overlayContent = document.getElementById('overlayContent');
+    wrapper.innerHTML = '';
+    overlay.style.display = 'block';
+    overlay.setAttribute('aria-hidden', 'false');
+    zoomControls.style.display = 'flex';
+
+    if (type === 'slides') {
+      const base = computeBaseSizeForSlides();
+      baseW = base.w; baseH = base.h;
+      wrapper.style.width = baseW + 'px';
+      wrapper.style.height = baseH + 'px';
+      const iframe = document.createElement('iframe');
+      iframe.id = 'zoomTarget';
+      iframe.src = `https://docs.google.com/presentation/d/${SLIDE_ID}/embed?start=false&loop=false&delayms=3000`;
+      iframe.allow = 'fullscreen';
+      iframe.style.width = '100%'; iframe.style.height = '100%'; iframe.style.border = 'none';
+      wrapper.appendChild(iframe);
+      setTimeout(() => overlayContent.scrollTo({ top: 0, left: 0 }), 50);
+    } else {
+      const img = document.createElement('img');
+      img.id = 'zoomTarget';
+      img.src = 'lesbian visibility day.jpg';
+      img.alt = 'Full Banner';
+      img.style.display = 'block';
+      img.style.width = 'auto'; img.style.height = 'auto';
+      img.onload = () => {
+        const base = computeBaseSizeForImage(img.naturalWidth, img.naturalHeight);
+        baseW = base.w; baseH = base.h;
+        wrapper.style.width = baseW + 'px'; wrapper.style.height = baseH + 'px';
+        img.style.width = '100%'; img.style.height = '100%';
+        setTimeout(() => overlayContent.scrollTo({ top: 0, left: 0 }), 50);
+      };
+      wrapper.appendChild(img);
     }
+    setTimeout(() => overlayContent.scrollTo({ top: 0, left: 0 }), 80);
+  }
 
-    function closeOverlay() {
-      document.getElementById('overlay').style.display = 'none';
+  function closeOverlay() {
+    document.getElementById('zoomWrapper').innerHTML = '';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('overlay').setAttribute('aria-hidden', 'true');
+    document.getElementById('zoomControls').style.display = 'none';
+  }
+
+  function applySize() {
+    const wrapper = document.getElementById('zoomWrapper');
+    const w = Math.round(baseW * zoomLevel);
+    const h = Math.round(baseH * zoomLevel);
+    wrapper.style.width = w + 'px';
+    wrapper.style.height = h + 'px';
+    const overlayContent = document.getElementById('overlayContent');
+    overlayContent.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }
+
+  function zoomIn() { zoomLevel = Math.min(zoomLevel * 1.25, 6); applySize(); }
+  function zoomOut() { zoomLevel = Math.max(zoomLevel / 1.25, 0.25); applySize(); }
+  function resetZoom() { zoomLevel = 1; applySize(); setTimeout(() => { document.getElementById('overlayContent').scrollTo({ top:0,left:0,behavior:'smooth'}); },60); }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeOverlay(); });
+  document.getElementById('overlay').addEventListener('click', (e) => { if (e.target === document.getElementById('overlay')) closeOverlay(); });
+  window.addEventListener('resize', () => {
+    if (!document.getElementById('zoomTarget')) return;
+    if (currentType === 'slides') {
+      const base = computeBaseSizeForSlides();
+      baseW = base.w; baseH = base.h;
+      applySize();
     }
-  </script>
+  });
+</script>
 
 </body>
 </html>
